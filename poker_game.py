@@ -32,6 +32,12 @@ def hand_rank(hand):
 		2 if (2,2,1) == counts else
 		1 if (2,1,1,1) == counts else
 		0), ranks
+def group(items):
+	"Return a list of [(count, x) ...], highest count first, then highest x first."
+	groups = [(items.count(x),x) for x in set(items)]
+	return sorted(groups, reverse=True)
+
+def unzip(pairs):return zip(*pairs)
 def card_ranks(cards):
 	"Return a list of the ranks, sorted with higher first"
 	ranks = ['--23456789TJQKA'.index(r) for r,s in cards]
@@ -115,4 +121,4 @@ def hand_percentage(n):
 	for i in reversed(xrange(9)):
 		print "%14s: %6.4f %%"%(hand_names[i],100.*counts[i]/n)
 
-hand_percentage(900000)
+hand_percentage(70000)
