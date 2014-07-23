@@ -14,26 +14,24 @@ def allmax(iterable, key=None):
 	return result
 def hand_rank(hand):
 	"Return a value indicating the rank of a hand"
-	ranks = card_ranks(hand)
-	if straight(ranks) and flush(hand):
-		return (8, max(ranks))
-	elif kind(4,ranks):
-		return (7,kind(4,ranks),kind(1,ranks))
-	elif kind(3,ranks) and kind(2,ranks):
-		return (6,kind(3,ranks),kind(2,ranks))
-	elif flush(hand):
-		return (5,ranks)
-	elif straight(ranks):
-		return(4,max(ranks))
-	elif kind(3,ranks):
-		return (3,kind(3,ranks),ranks)
-	elif twopair(ranks):
-		return (2,twopair(ranks),ranks)
-	elif kind(2,ranks):
-		return (1, kind(2,ranks),ranks)
-	else:
-		return (0,ranks)
-
+	#counts is the count of each rank; ranks lisrs corresponding ranks
+	#E.g. '7 T 7 9 7' => counts = (3,1,1); ranks = (7,10,9)
+	groups = group(['--23456789TJQKA'.index(r) for r,s in hand])
+	counts, ranks = unzip(groups)
+	if ranks == (14,5,4,3,2):
+		ranks = (5,4,3,2,1)
+	straight = len(ranks) == 5 and max(ranks) - min(ranks)==4
+	flush = len(set([s for r,s in hand])) == 1
+	return (9 if (5,)==counts else
+		8 if straight and flush else
+		7 if (4,1) == counts else
+		6 if (3,2) == counts else
+		5 if flush else
+		4 if straight else
+		3 if (3,1,1) == counts else
+		2 if (2,2,1) == counts else
+		1 if (2,1,1,1) == counts else
+		0), ranks
 def card_ranks(cards):
 	"Return a list of the ranks, sorted with higher first"
 	ranks = ['--23456789TJQKA'.index(r) for r,s in cards]
