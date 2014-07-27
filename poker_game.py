@@ -1,3 +1,6 @@
+hand_names = ['High cards', '1 pair', '2 pairs', '3-of-kind', 'Straight', 'Flush', 'Fullhouse', 'Four-of-kind', 'Straight-Flush']
+count_rankings = {(5,0):10,(4,1):7,(3,2):6,(3,1,1):3,(2,2,1):2,(2,1,1,1,):1,(1,1,1,1,1):0} #Global ranking of each hands
+
 def poker(hands):
 	"Return a list of wining hand: poker([hand,...]) => [hand,...]"
 	return allmax(hands, key=hand_rank)
@@ -22,19 +25,20 @@ def hand_rank(hand):
 		ranks = (5,4,3,2,1)
 	straight = len(ranks) == 5 and max(ranks) - min(ranks)==4
 	flush = len(set([s for r,s in hand])) == 1
-	return max(count_rankings[counts],4*straight + 5*flush),ranks
 	#if straight then it will return 4*1 =>4 
 	#if flush then it will return 5*1 => 5
 	#if both then it will return 4*1 + 5*1 => 9
-
-count_rankings = {(5,0):10,(4,1):7,(3,2):6,(3,1,1):3,(2,2,1):2,(2,1,1,1,):1,(1,1,1,1,1):0} #Global ranking of each hands
-
+	return max(count_rankings[counts],4*straight + 5*flush),ranks
+	
 def group(items):
 	"Return a list of [(count, x) ...], highest count first, then highest x first."
 	groups = [(items.count(x),x) for x in set(items)]
 	return sorted(groups, reverse=True)
 
-def unzip(pairs):return zip(*pairs)
+def unzip(pairs):
+	"Return a tuple of lists from a list of tuples: e.g. [(2,9),(2,7)] => ([2,2],[9,7])"
+	return zip(*pairs)
+
 def card_ranks(cards):
 	"Return a list of the ranks, sorted with higher first"
 	ranks = ['--23456789TJQKA'.index(r) for r,s in cards]
@@ -109,13 +113,12 @@ def deal(numhands, n=5,deck=[r+s for r in "23456789TJQKA" for s in "CDHS"]):
 def hand_percentage(n):
 	"Sample a random hand and print a table of percentages for each of the hand."
 	counts = [0] * 9
-	hand_names = ['High cards', '1 pair', '2 pairs', '3-of-kind', 'Straight', 'Flush', 'Fullhouse', 'Four-of-kind', 'Straight-Flush']
 	for i in xrange(n/10):
 		for hand in deal(10):
 			ranking = hand_rank(hand)[0]
 			counts[ranking] += 1
-
 	for i in reversed(xrange(9)):
 		print "%14s: %6.4f %%"%(hand_names[i],100.*counts[i]/n)
+	del counts[:]
 
 hand_percentage(70000)
